@@ -4,20 +4,22 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { BigNumber } from "ethers";
-import { ethers } from "hardhat";
-// import whitelist from "../configs/whitelist";
+import hardhat, { ethers } from "hardhat";
 
 async function main() {
   const ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
   const erc721DogyRace = await ERC721DogyRace.deploy(500, BigNumber.from("120000000000000000"), "https://localhost/")
 
   await erc721DogyRace.deployed();
-
-  console.log(`ERC721DogyRace deployed to: https://rinkeby.etherscan.io/address/${erc721DogyRace.address}#code}`);
-  // const [owner] = await ethers.getSigners();
-  // erc721DogyRace.connect(owner)
-  // await erc721DogyRace.addWhiteList(whitelist);
-  // console.log(await erc721DogyRace.whiteList());
+  const networkName = hardhat.network.name;
+  switch (networkName) {
+    case "rinkeby":
+      console.log(`ERC721DogyRace deployed to: https://rinkeby.etherscan.io/address/${erc721DogyRace.address}#code`);
+      break;
+    case "bscTestnet":
+      console.log(`ERC721DogyRace deployed to: https://testnet.bscscan.com/address/${erc721DogyRace.address}#code`);
+      break;
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -24,18 +24,19 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
-  defaultNetwork: "bsctest",
+  defaultNetwork: "bscTestnet",
   networks: {
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`,
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-    bsctest: {
+    bscTestnet: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
       chainId: 97,
-      gasPrice: 20000000000,
+      // gasPrice: 20000000000,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      timeout: 100000
     }
   },
   gasReporter: {
@@ -43,12 +44,13 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: {
-      mainnet: process.env.ETHERSCAN_API_KEY,
-      rinkeby: process.env.ETHERSCAN_API_KEY,
-      bsc: process.env.BSCSCAN_API_KEY,
-      bscTestnet: process.env.BSCSCAN_API_KEY,
-    },
+    // apiKey: {
+    //   mainnet: process.env.ETHERSCAN_API_KEY,
+    //   rinkeby: process.env.ETHERSCAN_API_KEY,
+    //   bsc: process.env.BSCSCAN_API_KEY,
+    //   bscTestnet: process.env.BSCSCAN_API_KEY,
+    // },
+    apiKey: process.env.BSCSCAN_API_KEY
   },
 };
 
