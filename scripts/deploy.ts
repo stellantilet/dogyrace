@@ -8,7 +8,7 @@ import hardhat, { ethers } from "hardhat";
 
 async function main() {
   const ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
-  const erc721DogyRace = await ERC721DogyRace.deploy(500, BigNumber.from("120000000000000000"), "https://localhost/")
+  const erc721DogyRace = await ERC721DogyRace.deploy(500, 2, BigNumber.from("120000000000000000"), "https://localhost/")
 
   await erc721DogyRace.deployed();
   const networkName = hardhat.network.name;

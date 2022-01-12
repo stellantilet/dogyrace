@@ -10,14 +10,22 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
     string private __baseURI;
     mapping(address => bool) private __whiteList;
     uint256 private __price;
-
-    event Withdraw(address to, uint256 amount);
+    uint256 private __maxMintPerAddress;
+    event TransferWithAmount(
+        address indexed from,
+        address indexed to,
+        uint256[] tokenIds,
+        uint256 indexed amount
+    );
+    event Withdraw(address indexed to, uint256 indexed amount);
 
     constructor(
         uint256 maxSupply_,
+        uint256 maxMintPerAddress_,
         uint256 price_,
         string memory baseURI_
     ) ERC721("DogyRace", "DORD") WithLimittedSupply(maxSupply_) {
+        __maxMintPerAddress = maxMintPerAddress_;
         _setBaseURI(baseURI_);
         __price = price_;
     }
@@ -48,6 +56,11 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
         }
     }
 
+    function setPrice(uint256 price_) public onlyOwner {
+        require(price_ > 10000000000000000, "Price is not valid");
+        __price = price_;
+    }
+
     function addWhiteList(address[] memory addresses_) public onlyOwner {
         uint256 length = addresses_.length;
         for (uint256 i = 0; i < length; i++) {
@@ -72,18 +85,43 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
         require(msg.value == __price, "Price is not correct");
         require(
             tokenCount() + 1 <= totalSupply(),
-            "Minted more than max supply"
+            "Mint requested more than max supply"
         );
         require(
             availableTokenCount() - 1 >= 0,
-            "Minted more than available count"
+            "Mint requested more than available count"
         );
         require(
-            balanceOf(_msgSender()) <= 1,
+            balanceOf(_msgSender()) <= __maxMintPerAddress - 1,
             "No more tokens for this address"
         );
         uint256 id = nextToken();
         _safeMint(_msgSender(), id);
+    }
+
+    function mintWithAmount(uint256 amount) public payable {
+        require(isWhiteListed(_msgSender()), "Not whitelisted");
+        require(amount > 0, "Amount is not valid");
+        require(msg.value == __price * amount, "Price is not correct");
+        require(
+            tokenCount() + amount < totalSupply(),
+            "Mint requested more than max supply"
+        );
+        require(
+            availableTokenCount() - amount >= 0,
+            "Mint requested more than available count"
+        );
+        require(
+            balanceOf(_msgSender()) <= __maxMintPerAddress - amount,
+            "No more tokens for this address"
+        );
+        uint256[] memory tokenIds = new uint256[](amount);
+        for (uint256 i = 0; i < amount; i++) {
+            uint256 id = nextToken();
+            _safeMint(_msgSender(), id);
+            tokenIds[i] = id;
+        }
+        emit TransferWithAmount(address(0), _msgSender(), tokenIds, amount);
     }
 
     function withdraw() public onlyOwner {
