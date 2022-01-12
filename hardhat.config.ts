@@ -45,13 +45,12 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    // apiKey: {
-    //   mainnet: process.env.ETHERSCAN_API_KEY,
-    //   rinkeby: process.env.ETHERSCAN_API_KEY,
-    //   bsc: process.env.BSCSCAN_API_KEY,
-    //   bscTestnet: process.env.BSCSCAN_API_KEY,
-    // },
-    apiKey: process.env.BSCSCAN_API_KEY
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY,
+      rinkeby: process.env.ETHERSCAN_API_KEY,
+      bsc: process.env.BSCSCAN_API_KEY,
+      bscTestnet: process.env.BSCSCAN_API_KEY,
+    },
   },
 };
 
