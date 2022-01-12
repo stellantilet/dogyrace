@@ -88,10 +88,6 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
             "Mint requested more than max supply"
         );
         require(
-            availableTokenCount() - 1 >= 0,
-            "Mint requested more than available count"
-        );
-        require(
             balanceOf(_msgSender()) <= __maxMintPerAddress - 1,
             "No more tokens for this address"
         );
@@ -104,12 +100,8 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
         require(amount > 0, "Amount is not valid");
         require(msg.value == __price * amount, "Price is not correct");
         require(
-            tokenCount() + amount < totalSupply(),
+            tokenCount() + amount <= totalSupply(),
             "Mint requested more than max supply"
-        );
-        require(
-            availableTokenCount() - amount >= 0,
-            "Mint requested more than available count"
         );
         require(
             balanceOf(_msgSender()) <= __maxMintPerAddress - amount,
