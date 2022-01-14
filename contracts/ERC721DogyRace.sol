@@ -100,7 +100,7 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
 
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
-        require(balance > 0, "balance is not available");
+        require(balance > 0, "Balance is not available");
         (payable(msg.sender)).transfer(balance);
         emit Withdraw(msg.sender, balance);
     }
