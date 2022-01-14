@@ -8,7 +8,7 @@ import hardhat, { ethers } from "hardhat";
 
 async function main() {
   const ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
-  const erc721DogyRace = await ERC721DogyRace.deploy(500, 2, BigNumber.from("100000000000000000"), "https://gateway.pinata.cloud/ipfs/QmWQgjq53fjTmhrDgQY7xq4uzhFoZThh7ashZbJJ9sd68P/")
+  const erc721DogyRace = await ERC721DogyRace.deploy(500, 2, "https://gateway.pinata.cloud/ipfs/QmWQgjq53fjTmhrDgQY7xq4uzhFoZThh7ashZbJJ9sd68P/")
 
   await erc721DogyRace.deployed();
   const networkName = hardhat.network.name;

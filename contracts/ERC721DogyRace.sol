@@ -27,13 +27,12 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     constructor(
         uint256 maxSupply_,
         uint256 maxMintPerAddress_,
-        uint256 price_,
         string memory baseURI_
     ) ERC721("DogyRace", "DORD") {
         __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
         setBaseURI(baseURI_);
-        __price = price_;
+        setPrice(0.1 ether);
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -75,7 +74,7 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function setPrice(uint256 price_) public onlyOwner {
-        require(price_ > 10000000000000000, "Price is not valid");
+        require(price_ >= 0.01 ether, "Price is not valid");
         __price = price_;
     }
 
