@@ -38,6 +38,12 @@ const config: HardhatUserConfig = {
       // gasPrice: 20000000000,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       timeout: 1000000
+    },
+    bsc: {
+      url: "https://bsc-dataseed.binance.org/",
+      chainId: 56,
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      timeout: 1000000
     }
   },
   gasReporter: {

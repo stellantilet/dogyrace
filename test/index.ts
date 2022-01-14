@@ -11,7 +11,7 @@ describe("ERC721DogyRace", () => {
   it("whitelist", async () => {
     accounts = await ethers.getSigners()
     ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
-    erc721DogyRace = await ERC721DogyRace.deploy(10, 2, BigNumber.from("120000000000000000"), "https://localhost:3000/")
+    erc721DogyRace = await ERC721DogyRace.deploy(10, 2, BigNumber.from("120000000000000000"), "https://gateway.pinata.cloud/ipfs/QmWQgjq53fjTmhrDgQY7xq4uzhFoZThh7ashZbJJ9sd68P/")
     await erc721DogyRace.deployed()
     const [owner, addr1] = accounts
     await erc721DogyRace.addToWhiteList(owner.address)
@@ -46,7 +46,7 @@ describe("ERC721DogyRace", () => {
   })
 
   it("tokens", async () => {
-    expect((await erc721DogyRace.tokenURI(1))).to.equal("https://localhost:3000/1")
+    expect((await erc721DogyRace.tokenURI(1))).to.equal("https://gateway.pinata.cloud/ipfs/QmWQgjq53fjTmhrDgQY7xq4uzhFoZThh7ashZbJJ9sd68P/1.json")
   })
 
   it("withdraw", async () => {

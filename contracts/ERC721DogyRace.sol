@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ERC721DogyRace is ERC721Enumerable, Ownable {
+    using Strings for uint256;
     string private __baseURI;
     mapping(address => bool) private __whiteList;
     uint256 private __price;
@@ -55,6 +56,22 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
         if (!isWhiteListed(address_)) {
             __whiteList[address_] = true;
         }
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        require(_exists(tokenId), "URI query for nonexistent token");
+
+        string memory baseURI = _baseURI();
+        return
+            bytes(baseURI).length > 0
+                ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json"))
+                : "";
     }
 
     function setPrice(uint256 price_) public onlyOwner {
