@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "./WithLimittedSupply.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
+contract ERC721DogyRace is ERC721Enumerable, Ownable {
     string private __baseURI;
     mapping(address => bool) private __whiteList;
     uint256 private __price;
@@ -19,31 +19,32 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
     );
     event Withdraw(address indexed to, uint256 indexed amount);
 
+    using Counters for Counters.Counter;
+    Counters.Counter private __tokenIncrement;
+    uint256 private __maxSupply;
+
     constructor(
         uint256 maxSupply_,
         uint256 maxMintPerAddress_,
         uint256 price_,
         string memory baseURI_
-    ) ERC721("DogyRace", "DORD") WithLimittedSupply(maxSupply_) {
+    ) ERC721("DogyRace", "DORD") {
+        __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
-        _setBaseURI(baseURI_);
+        setBaseURI(baseURI_);
         __price = price_;
-    }
-
-    function _setBaseURI(string memory baseURI_) internal onlyOwner {
-        __baseURI = baseURI_;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
         return __baseURI;
     }
 
-    function baseURI() public view returns (string memory) {
-        return _baseURI();
+    function setBaseURI(string memory baseURI_) public onlyOwner {
+        __baseURI = baseURI_;
     }
 
-    function setBaseURI(string memory baseURI_) public onlyOwner {
-        _setBaseURI(baseURI_);
+    function maxSupply() public view returns (uint256) {
+        return __maxSupply;
     }
 
     function isWhiteListed(address address_) public view returns (bool) {
@@ -70,37 +71,18 @@ contract ERC721DogyRace is ERC721, WithLimittedSupply, Ownable {
         }
     }
 
-    function nextToken()
-        internal
-        override
-        ensureAvailability
-        returns (uint256)
-    {
-        uint256 tokenId = super.nextToken();
+    function nextToken() internal virtual returns (uint256) {
+        uint256 tokenId = __tokenIncrement.current();
+        __tokenIncrement.increment();
         return tokenId;
     }
 
-    function mint() public payable {
-        require(isWhiteListed(_msgSender()), "Not whitelisted");
-        require(msg.value == __price, "Price is not correct");
-        require(
-            tokenCount() + 1 <= totalSupply(),
-            "Mint requested more than max supply"
-        );
-        require(
-            balanceOf(_msgSender()) <= __maxMintPerAddress - 1,
-            "No more tokens for this address"
-        );
-        uint256 id = nextToken();
-        _safeMint(_msgSender(), id);
-    }
-
-    function mintWithAmount(uint256 amount) public payable {
+    function mint(uint256 amount) public payable {
         require(isWhiteListed(_msgSender()), "Not whitelisted");
         require(amount > 0, "Amount is not valid");
         require(msg.value == __price * amount, "Price is not correct");
         require(
-            tokenCount() + amount <= totalSupply(),
+            totalSupply() + amount <= maxSupply(),
             "Mint requested more than max supply"
         );
         require(
