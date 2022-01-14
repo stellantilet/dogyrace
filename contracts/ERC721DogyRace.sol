@@ -79,6 +79,10 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
         __price = price_;
     }
 
+    function price() public view returns (uint256) {
+        return __price;
+    }
+
     function addWhiteList(address[] memory addresses_) public onlyOwner {
         uint256 length = addresses_.length;
         for (uint256 i = 0; i < length; i++) {

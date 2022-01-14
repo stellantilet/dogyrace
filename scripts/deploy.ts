@@ -19,6 +19,9 @@ async function main() {
     case "bscTestnet":
       console.log(`ERC721DogyRace deployed to: https://testnet.bscscan.com/address/${erc721DogyRace.address}#code`);
       break;
+    case "bsc":
+      console.log(`ERC721DogyRace deployed to: https://bscscan.com/address/${erc721DogyRace.address}#code`);
+      break;
   }
 }
 
