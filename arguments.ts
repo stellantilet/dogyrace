@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers";
 export default [
   500,
   2,
