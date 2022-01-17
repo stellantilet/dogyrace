@@ -9,15 +9,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract ERC721DogyRace is ERC721Enumerable, Ownable {
     using Strings for uint256;
     string private __baseURI;
-    mapping(address => bool) private __whiteList;
     uint256 private __price;
     uint256 private __maxMintPerAddress;
-    event TransferWithAmount(
-        address indexed from,
-        address indexed to,
-        uint256[] tokenIds,
-        uint256 indexed amount
-    );
     event Withdraw(address indexed to, uint256 indexed amount);
 
     using Counters for Counters.Counter;
@@ -32,7 +25,7 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
         __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
         setBaseURI(baseURI_);
-        setPrice(0.1 ether);
+        setPrice(0.15 ether);
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -45,16 +38,6 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
 
     function maxSupply() public view returns (uint256) {
         return __maxSupply;
-    }
-
-    function isWhiteListed(address address_) public view returns (bool) {
-        return __whiteList[address_] == true;
-    }
-
-    function addToWhiteList(address address_) public onlyOwner {
-        if (!isWhiteListed(address_)) {
-            __whiteList[address_] = true;
-        }
     }
 
     function tokenURI(uint256 tokenId)
@@ -82,15 +65,6 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
         return __price;
     }
 
-    function addWhiteList(address[] memory addresses_) public onlyOwner {
-        uint256 length = addresses_.length;
-        for (uint256 i = 0; i < length; i++) {
-            if (!isWhiteListed(addresses_[i])) {
-                __whiteList[addresses_[i]] = true;
-            }
-        }
-    }
-
     function nextToken() internal virtual returns (uint256) {
         uint256 tokenId = __tokenIncrement.current();
         __tokenIncrement.increment();
@@ -98,7 +72,6 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function mint(uint256 amount) public payable {
-        require(isWhiteListed(_msgSender()), "Not whitelisted");
         require(amount > 0, "Amount is not valid");
         require(msg.value == __price * amount, "Price is not correct");
         require(
@@ -109,13 +82,10 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
             balanceOf(_msgSender()) <= __maxMintPerAddress - amount,
             "No more tokens for this address"
         );
-        uint256[] memory tokenIds = new uint256[](amount);
         for (uint256 i = 0; i < amount; i++) {
             uint256 id = nextToken();
             _safeMint(_msgSender(), id);
-            tokenIds[i] = id;
         }
-        emit TransferWithAmount(address(0), _msgSender(), tokenIds, amount);
     }
 
     function withdraw() public onlyOwner {
