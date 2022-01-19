@@ -13,9 +13,10 @@ describe("ERC721DogyRace", () => {
     ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
     erc721DogyRace = await ERC721DogyRace.deploy(10, 2, "https://gateway.pinata.cloud/ipfs/QmWQgjq53fjTmhrDgQY7xq4uzhFoZThh7ashZbJJ9sd68P/")
     await erc721DogyRace.deployed()
-    const [owner, addr1] = accounts
+    const [owner, addr1, addr2] = accounts
     await erc721DogyRace.addToWhiteList(owner.address)
     await erc721DogyRace.addToWhiteList(addr1.address)
+    await erc721DogyRace.addToWhiteList(addr2.address)
     await erc721DogyRace.addWhiteList(whitelist)
     expect(await erc721DogyRace.isWhiteListed(owner.address)).to.equal(true)
     expect(await erc721DogyRace.isWhiteListed(whitelist[249])).to.equal(true)

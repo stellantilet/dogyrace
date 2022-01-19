@@ -15,7 +15,8 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private __tokenIncrement;
     uint256 private __maxSupply;
-    // bool private __isPresale;
+    uint256 __presaleAt;
+    uint256 __periodInSeconds;
     string private __baseURI;
     mapping(address => bool) private __whiteList;
 
@@ -26,7 +27,11 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     ) ERC721("DogyRace", "DORD") {
         __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
-        // __isPresale = true;
+        __presaleAt = 1642887000;
+
+        // Testing
+        // __presaleAt = 1642592695;
+        __periodInSeconds = 1800;
         setBaseURI(baseURI_);
         setPrice(0.15 ether);
     }
@@ -85,8 +90,19 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function isPresale() internal view returns (bool) {
-        uint256 timeInDay = block.timestamp % 86400;
-        if (timeInDay >= 59400 && timeInDay <= 61200) {
+        uint256 timestamp = block.timestamp;
+        if (
+            timestamp >= __presaleAt &&
+            timestamp <= __presaleAt + __periodInSeconds
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    function isNotSale() internal view returns (bool) {
+        uint256 timestamp = block.timestamp;
+        if (timestamp < __presaleAt) {
             return true;
         }
         return false;
@@ -108,10 +124,11 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function mint(uint256 amount) public payable {
+        require(!isNotSale(), "This is not sale period");
         if (isPresale()) {
             require(
                 isWhiteListed(_msgSender()),
-                "Sender is not presale whitelisted"
+                "Sender is not on whitelisted"
             );
         }
         require(amount > 0, "Amount is not valid");
