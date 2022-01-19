@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ERC721DogyRace is ERC721Enumerable, Ownable {
     using Strings for uint256;
-    string private __baseURI;
     uint256 private __price;
     uint256 private __maxMintPerAddress;
     event Withdraw(address indexed to, uint256 indexed amount);
@@ -16,6 +15,9 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private __tokenIncrement;
     uint256 private __maxSupply;
+    // bool private __isPresale;
+    string private __baseURI;
+    mapping(address => bool) private __whiteList;
 
     constructor(
         uint256 maxSupply_,
@@ -24,6 +26,7 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     ) ERC721("DogyRace", "DORD") {
         __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
+        // __isPresale = true;
         setBaseURI(baseURI_);
         setPrice(0.15 ether);
     }
@@ -65,6 +68,39 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
         return __price;
     }
 
+    function isWhiteListed(address address_) public view returns (bool) {
+        return __whiteList[address_] == true;
+    }
+
+    function addToWhiteList(address address_) public onlyOwner {
+        if (!isWhiteListed(address_)) {
+            __whiteList[address_] = true;
+        }
+    }
+
+    function removeFromWhiteList(address address_) public onlyOwner {
+        if (isWhiteListed(address_)) {
+            __whiteList[address_] = false;
+        }
+    }
+
+    function isPresale() internal view returns (bool) {
+        uint256 timeInDay = block.timestamp % 86400;
+        if (timeInDay >= 59400 && timeInDay <= 61200) {
+            return true;
+        }
+        return false;
+    }
+
+    function addWhiteList(address[] memory addresses_) public onlyOwner {
+        uint256 length = addresses_.length;
+        for (uint256 i = 0; i < length; i++) {
+            if (!isWhiteListed(addresses_[i])) {
+                __whiteList[addresses_[i]] = true;
+            }
+        }
+    }
+
     function nextToken() internal virtual returns (uint256) {
         uint256 tokenId = __tokenIncrement.current();
         __tokenIncrement.increment();
@@ -72,6 +108,12 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function mint(uint256 amount) public payable {
+        if (isPresale()) {
+            require(
+                isWhiteListed(_msgSender()),
+                "Sender is not presale whitelisted"
+            );
+        }
         require(amount > 0, "Amount is not valid");
         require(msg.value == __price * amount, "Price is not correct");
         require(

@@ -4,10 +4,11 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import hardhat, { ethers } from "hardhat";
+import args from '../arguments';
 
 async function main() {
   const ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
-  const erc721DogyRace = await ERC721DogyRace.deploy(500, 2, "https://gateway.pinata.cloud/ipfs/QmWQgjq53fjTmhrDgQY7xq4uzhFoZThh7ashZbJJ9sd68P/")
+  const erc721DogyRace = await ERC721DogyRace.deploy(args[0], args[1], args[2])
 
   await erc721DogyRace.deployed();
   const networkName = hardhat.network.name;
