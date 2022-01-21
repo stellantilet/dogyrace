@@ -13,7 +13,7 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     event Withdraw(address indexed to, uint256 indexed amount);
 
     using Counters for Counters.Counter;
-    Counters.Counter private __tokenIncrement;
+    uint256 __tokenIncrement;
     uint256 private __maxSupply;
     uint256 __presaleAt;
     uint256 __periodInSeconds;
@@ -28,7 +28,7 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
         __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
         __presaleAt = 1642887000;
-
+        __tokenIncrement = 500;
         // Testing
         // __presaleAt = 1642592695;
         __periodInSeconds = 1800;
@@ -118,8 +118,8 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function nextToken() internal virtual returns (uint256) {
-        uint256 tokenId = __tokenIncrement.current();
-        __tokenIncrement.increment();
+        uint256 tokenId = __tokenIncrement;
+        __tokenIncrement = __tokenIncrement + 1;
         return tokenId;
     }
 
