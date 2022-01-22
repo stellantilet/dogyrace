@@ -27,11 +27,9 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     ) ERC721("DogyRace", "DORD") {
         __maxSupply = maxSupply_;
         __maxMintPerAddress = maxMintPerAddress_;
-        __presaleAt = 1642887000;
+        __presaleAt = 1642867200;
         __tokenIncrement = 500;
-        // Testing
-        // __presaleAt = 1642592695;
-        __periodInSeconds = 1800;
+        __periodInSeconds = 0;
         setBaseURI(baseURI_);
         setPrice(0.15 ether);
     }
@@ -124,13 +122,13 @@ contract ERC721DogyRace is ERC721Enumerable, Ownable {
     }
 
     function mint(uint256 amount) public payable {
-        require(!isNotSale(), "This is not sale period");
-        if (isPresale()) {
-            require(
-                isWhiteListed(_msgSender()),
-                "Sender is not on whitelisted"
-            );
-        }
+        // require(!isNotSale(), "This is not sale period");
+        // if (isPresale()) {
+        //     require(
+        //         isWhiteListed(_msgSender()),
+        //         "Sender is not on whitelisted"
+        //     );
+        // }
         require(amount > 0, "Amount is not valid");
         require(msg.value == __price * amount, "Price is not correct");
         require(
